@@ -1,34 +1,43 @@
-const passport = require("passport");
-const passportJWT = require("passport-jwt");
-const { jwtSecret, jwtSession } = require("./config.js");
-const ExtractJwt = passportJWT.ExtractJwt;
-const Strategy = passportJWT.Strategy;
-const params = {
-  secretOrKey: jwtSecret,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-};
+const passport = require('passport')
+const passportJwt = require('passport-jwt')
+const { Strategy, ExtractJwt } = passportJwt
+const { jwtSecret } = require("./config.js");
 
-module.exports = () => {
-  passport.use(
-    new Strategy(params, async (payload, done) => {
-      if (payload && payload.id) {
-        const user = payload;
-        console.log(user);
-        
-        if (user) {
-          delete user.password;
+module.exports = app => {
 
-          return done(null, user);
-        }
-      }
-  
-      return done(null, false, { message: "Not Authorized." });
-    })
-  );
+  const params = {
+    secretOrKey: jwtSecret,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+  };
 
-  const initialize = () => passport.initialize();
+  const strategy = new Strategy(params, (payload, done) => {
+   
 
-  const authenticate = passport.authenticate("jwt", jwtSession);
+      app.db('users')
+          .where({ id: payload.user.id})
+          .first()
+          .then(user => {
+              if (user) {
 
-  return { initialize, authenticate };
-};
+                if(payload.expire < Date.now()){
+                  
+                  return done(null, false);
+
+                } else {
+                  done(null, { id: user.id, name: user.name, email: user.email })
+                }
+            
+              } else {
+                done(null, false, 'Unauthorized');
+              }
+          })
+          .catch(err => done(err, false))
+  })
+
+  passport.use(strategy)
+
+  return {
+      initialize: () => passport.initialize(),
+      authenticate: () => passport.authenticate('jwt', { session: false }),
+  }
+}

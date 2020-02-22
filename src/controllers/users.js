@@ -1,9 +1,12 @@
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-module.exports = () => {
+module.exports = app => {
+
   const me = async (req, res) => {
-    return res.status(200).json({ data: req.user });
+    
+      res.json(req.user);
+
   };
 
   const register = async (req, res) => {
