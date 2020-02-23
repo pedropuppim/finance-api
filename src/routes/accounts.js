@@ -6,6 +6,7 @@ module.exports = app => {
 
    app.route("/accounts/:id")
       .all(app.src.config.auth.authenticate())
-      .put(app.src.controllers.accounts.update);
+      .put(app.src.controllers.accounts.update)
+      .delete(app.src.controllers.accounts.remove);
   };
   

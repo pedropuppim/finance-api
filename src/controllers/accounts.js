@@ -35,7 +35,29 @@ module.exports = app => {
         .update({ name })
         .then(_ => res.status(200).json(req.body))
         .catch(err => res.status(400).json(err))
+  };
+
+  const remove = (req, res) => {
+
+    const doneAt = new Date()
+    
+    if (!req.params.id) {
+        return res.status(400).send('Id required')
+    } 
+
+    app.db('accounts')
+        .where({ id: req.params.id })
+        .delete()
+        .then(rowsDeleted => {
+            if (rowsDeleted > 0) {
+                res.status(204).send()
+            } else {
+                const msg = `record not found with id ${req.params.id}.`
+                res.status(400).send(msg)
+            }
+        })
+        .catch(err => res.status(400).json(err))
   }
 
-  return { list, save, update };
+  return { list, save, update, remove };
 };
