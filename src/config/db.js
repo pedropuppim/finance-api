@@ -1,6 +1,12 @@
-const config = require("./../../knexfile.js");
-const knex = require("knex")(config);
-const setupPaginator = require("knex-paginator");
-setupPaginator(knex);
+const config = require('./../../knexfile.js')
+const knex = require('knex')(config)
+// const Paginator = require('knex-paginator');
 
-module.exports = knex;
+// Paginator(knex);
+
+const { attachPaginate } = require('knex-paginate');
+attachPaginate();
+
+
+
+module.exports = knex

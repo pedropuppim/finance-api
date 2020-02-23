@@ -3,9 +3,10 @@ const app = express()
 
 require('dotenv').config()
 
-const db = require('./src/config/db')
-
+const knex = require('./src/config/db')
 const consign = require('consign')
+
+app.db = knex
 
 consign()
     .include('./src/config/auth.js')
@@ -14,7 +15,6 @@ consign()
     .then('./src/routes/')
     .into(app)
 
-app.db = db
 
 
 app.listen(5000, () => {
