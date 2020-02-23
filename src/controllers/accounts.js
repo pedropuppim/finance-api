@@ -2,7 +2,7 @@ module.exports = app => {
 
   const list = async (req, res) => {
     
-    const accounts = await app.db('accounts')
+    const accounts = await app.db('accounts').where({ active: 1 })
     
     return res.status(200).json(accounts);
 
@@ -46,8 +46,8 @@ module.exports = app => {
     } 
 
     app.db('accounts')
-        .where({ id: req.params.id })
-        .delete()
+        .where({ id: req.params.id, active: 1 })
+        .update({active: 0})
         .then(rowsDeleted => {
             if (rowsDeleted > 0) {
                 res.status(204).send()
