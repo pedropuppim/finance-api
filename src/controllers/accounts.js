@@ -16,13 +16,13 @@ module.exports = app => {
         return res.status(400).send('Name required')
     }
 
-    app.db('accounts')
+    await app.db('accounts')
         .insert(req.body)
         .then(_ => res.status(201).send())
         .catch(err => res.status(400).json(err))
   };
 
-  const update = (req, res) => {
+  const update = async  (req, res) => {
 
     const doneAt = new Date()
     
@@ -32,14 +32,14 @@ module.exports = app => {
         var name = req.body.name;
     }
 
-    app.db('accounts')
+    await app.db('accounts')
         .where({ id: req.params.id })
         .update({ name })
         .then(_ => res.status(200).json(req.body))
         .catch(err => res.status(400).json(err))
   };
 
-  const remove = (req, res) => {
+  const remove = async (req, res) => {
 
     const doneAt = new Date()
     
@@ -47,7 +47,7 @@ module.exports = app => {
         return res.status(400).send('Id required')
     } 
 
-    app.db('accounts')
+    await app.db('accounts')
         .where({ id: req.params.id, active: 1 })
         .update({active: 0})
         .then(rowsDeleted => {

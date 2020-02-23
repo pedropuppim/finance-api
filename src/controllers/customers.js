@@ -5,6 +5,7 @@ module.exports = app => {
   const list = async (req, res) => {
     
     const page = req.query.page || "1";
+    
     const customers = await app.db('customers').where({ active: 1 })
     .orderBy('id', 'desc')
     .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
@@ -19,13 +20,13 @@ module.exports = app => {
         return res.status(400).send('Name required')
     }
 
-    app.db('customers')
+    await app.db('customers')
         .insert(req.body)
         .then(_ => res.status(201).send())
         .catch(err => res.status(400).json(err))
   };
 
-  const update = (req, res) => {
+  const update = async (req, res) => {
     
     if (!req.body.name) {
         return res.status(400).send('Name required')
@@ -33,22 +34,20 @@ module.exports = app => {
         var name = req.body.name;
     }
 
-    app.db('customers')
+    await app.db('customers')
         .where({ id: req.params.id })
         .update({ name })
         .then(_ => res.status(200).json(req.body))
         .catch(err => res.status(400).json(err))
   };
 
-  const remove = (req, res) => {
+  const remove = async (req, res) => {
 
-    const doneAt = new Date()
-    
     if (!req.params.id) {
         return res.status(400).send('Id required')
     } 
 
-    app.db('customers')
+    await app.db('customers')
         .where({ id: req.params.id, active: 1 })
         .update({active: 0})
         .then(rowsDeleted => {

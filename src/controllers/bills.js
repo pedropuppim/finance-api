@@ -22,29 +22,29 @@ module.exports = app => {
 
   const save = async (req, res) => {
 
-    app.db('bills')
+    await app.db('bills')
         .insert(req.body)
         .then(_ => res.status(201).send())
         .catch(err => res.status(400).json(err))
   };
 
-  const update = (req, res) => {
+  const update = async (req, res) => {
 
-    app.db('bills')
+    await app.db('bills')
         .where({ id: req.params.id })
         .update(req.body)
         .then(_ => res.status(200).json(req.body))
         .catch(err => res.status(400).json(err))
   };
 
-  const remove = (req, res) => {
+  const remove = async (req, res) => {
 
     
     if (!req.params.id) {
         return res.status(400).send('Id required')
     } 
 
-    app.db('bills')
+    await app.db('bills')
         .where({ id: req.params.id, active: 1 })
         .update({active: 0})
         .then(rowsDeleted => {
