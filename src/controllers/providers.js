@@ -4,9 +4,12 @@ module.exports = app => {
 
   const list = async (req, res) => {
     
-    const accounts = await app.db('accounts').where({ active: 1 })
-    
-    return res.status(200).json(accounts);
+    const page = req.query.page || "1";
+    const providers = await app.db('providers').where({ active: 1 })
+    .orderBy('id', 'desc')
+    .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
+
+    return res.status(200).json(providers);
 
   };
 
@@ -16,15 +19,13 @@ module.exports = app => {
         return res.status(400).send('Name required')
     }
 
-    app.db('accounts')
+    app.db('providers')
         .insert(req.body)
         .then(_ => res.status(201).send())
         .catch(err => res.status(400).json(err))
   };
 
   const update = (req, res) => {
-
-    const doneAt = new Date()
     
     if (!req.body.name) {
         return res.status(400).send('Name required')
@@ -32,7 +33,7 @@ module.exports = app => {
         var name = req.body.name;
     }
 
-    app.db('accounts')
+    app.db('providers')
         .where({ id: req.params.id })
         .update({ name })
         .then(_ => res.status(200).json(req.body))
@@ -47,7 +48,7 @@ module.exports = app => {
         return res.status(400).send('Id required')
     } 
 
-    app.db('accounts')
+    app.db('providers')
         .where({ id: req.params.id, active: 1 })
         .update({active: 0})
         .then(rowsDeleted => {

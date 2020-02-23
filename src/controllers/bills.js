@@ -6,15 +6,15 @@ module.exports = app => {
     
     const page = req.query.page || "1";
 
-
     const bills = await app.db('bills').where({ active: 1 })
     .modify(function(queryBuilder) {
       if(req.query.status) {
           queryBuilder.where('status', '=',req.query.status )
       }
     })
-    .paginate({ perPage: options.paginate.recordsPerPage, page });
-    
+    .orderBy('id', 'desc')
+    .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
+
     return res.status(200).json(bills);
     
 
