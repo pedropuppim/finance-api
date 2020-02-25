@@ -6,23 +6,27 @@ module.exports = app => {
     
     const page = req.query.page || "1";
 
-    const bills = await app.db('bills').where({ active: 1 })
+    const invoices = await app.db('invoices as i')
+    .select("i.*","c.name as name_account","s.name as name_status","s.css as css_status")
+    .join('accounts as c', 'c.id', '=', 'i.account_id')
+    .join('status as s', 's.id', '=', 'i.status')
+    .where({ 'i.active': 1 })
     .modify(function(queryBuilder) {
       if(req.query.status) {
-          queryBuilder.where('status', '=',req.query.status )
+          queryBuilder.where('i.status', '=',req.query.status )
       }
     })
-    .orderBy('id', 'desc')
+    .orderBy('i.id', 'desc')
     .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
 
-    return res.status(200).json(bills);
+    return res.status(200).json(invoices);
     
 
   };
 
   const save = async (req, res) => {
 
-    await app.db('bills')
+    await app.db('invoices')
         .insert(req.body)
         .then(_ => res.status(201).send())
         .catch(err => res.status(400).json(err))
@@ -30,7 +34,7 @@ module.exports = app => {
 
   const update = async (req, res) => {
 
-    await app.db('bills')
+    await app.db('invoices')
         .where({ id: req.params.id })
         .update(req.body)
         .then(_ => res.status(200).json(req.body))
@@ -44,7 +48,7 @@ module.exports = app => {
         return res.status(400).send('Id required')
     } 
 
-    await app.db('bills')
+    await app.db('invoices')
         .where({ id: req.params.id, active: 1 })
         .update({active: 0})
         .then(rowsDeleted => {

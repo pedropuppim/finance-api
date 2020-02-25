@@ -1,5 +1,5 @@
 exports.up = function(knex) {
-    return knex.schema.createTable("bills", function(table) {
+    return knex.schema.createTable("invoices", function(table) {
       table.increments();
       table.integer('account_id').unsigned();
       table.foreign('account_id').references('id').inTable('accounts');
@@ -14,7 +14,7 @@ exports.up = function(knex) {
   };
   
   exports.down = function(knex) {
-    return knex.schema.dropTable("bills");
+    return knex.schema.dropTable("invoices");
   };
   
 

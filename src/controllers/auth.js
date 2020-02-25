@@ -21,12 +21,14 @@ module.exports = app => {
 
     delete user.password;
 
+    const expire = Date.now() + (1000 * 60 * 60);
+
     const token = jwt.encode({
       user: user,
-      expire: Date.now() + (1000 * 60 * 60)
+      expire: expire
      }, jwtSecret);
 
-    return res.status(200).json({ token, user });
+    return res.status(200).json({ token, user, expire });
         
     };
 
