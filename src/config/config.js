@@ -4,6 +4,6 @@ module.exports = {
   jwtSecret: process.env.SECRET_API_KEY || "secret",
   jwtSession: { session: false },
   paginate: {
-    recordsPerPage: 10,
+    recordsPerPage: 7,
   }
 };

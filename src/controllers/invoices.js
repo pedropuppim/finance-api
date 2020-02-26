@@ -19,6 +19,7 @@ module.exports = app => {
     .orderBy('i.id', 'desc')
     .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
 
+
     return res.status(200).json(invoices);
     
 
