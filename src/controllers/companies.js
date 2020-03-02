@@ -7,8 +7,7 @@ module.exports = app => {
         const page = req.query.page || "1";
 
         const companies = await app.db('companies').where({ active: 1 })
-            .orderBy('id', 'desc')
-            .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
+            .orderBy('id', 'desc');
 
         return res.status(200).json(companies);
 

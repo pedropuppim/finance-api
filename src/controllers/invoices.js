@@ -7,9 +7,10 @@ module.exports = app => {
     const page = req.query.page || "1";
 
     const invoices = await app.db('invoices as i')
-      .select("i.*", "c.name as name_account", "s.name as name_status", "s.css as css_status")
-      .join('accounts as c', 'c.id', '=', 'i.account_id')
+      .select("i.*", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
+      .join('accounts as a', 'a.id', '=', 'i.account_id')
       .join('status as s', 's.id', '=', 'i.status')
+      .join('companies as c', 'c.id', '=', 'i.company_id')
       .where({ 'i.active': 1 })
       .modify(function (queryBuilder) {
         if (req.query.status) {
@@ -32,8 +33,9 @@ module.exports = app => {
     }
 
     const invoice = await app.db('invoices as i')
-      .select("i.*", "c.name as name_account", "s.name as name_status", "s.css as css_status")
-      .join('accounts as c', 'c.id', '=', 'i.account_id')
+      .select("i.*", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
+      .join('accounts as a', 'a.id', '=', 'i.account_id')
+      .join('companies as c', 'c.id', '=', 'i.company_id')
       .join('status as s', 's.id', '=', 'i.status')
       .where({ 'i.active': 1 })
       .where({ 'i.id': req.params.id })
