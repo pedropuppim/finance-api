@@ -1,6 +1,6 @@
 exports.up = function (knex, Promise) {
     return knex.schema.alterTable('invoices', function (table) {
-        table.string('type', 1).defaultTo(0);
+        table.string('type', 1).defaultTo(1);
     });
 };
 
