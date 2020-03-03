@@ -13,6 +13,23 @@ module.exports = app => {
 
     };
 
+    const get = async (req, res) => {
+
+        const page = req.query.page || "1";
+
+        if (!req.params.id) {
+            return res.status(400).send('Id required')
+        }
+
+        const companies = await app.db('companies')
+            .where({ active: 1, id: req.params.id })
+            .first()
+            .orderBy('id', 'desc');
+
+        return res.status(200).json(companies);
+
+    };
+
     const save = async (req, res) => {
 
         if (!req.body.name) {
@@ -60,5 +77,5 @@ module.exports = app => {
             .catch(err => res.status(400).json(err))
     }
 
-    return { list, save, update, remove };
+    return { list, save, update, remove, get };
 };
