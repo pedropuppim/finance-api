@@ -17,7 +17,7 @@ module.exports = app => {
           queryBuilder.where('i.status', '=', req.query.status)
         }
       })
-      .orderBy('i.id', 'desc')
+      .orderBy('i.dt_duedate', 'asc')
       .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
 
 
