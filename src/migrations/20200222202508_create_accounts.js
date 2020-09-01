@@ -3,7 +3,7 @@ exports.up = function(knex) {
       table.increments();
       table.string("name").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
-      table.dateTime("updatedAt").notNullable().defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
+      table.dateTime("updated_at").notNullable().defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
   };
   

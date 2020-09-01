@@ -4,9 +4,10 @@ exports.up = function(knex) {
     table.string("name").notNullable();
     table.string("email").notNullable().unique();
     table.string("password").notNullable();
+    table.string('active', 1).defaultTo(1); 
+    table.string('admin', 1).defaultTo("0"); 
     table.timestamp("created_at").defaultTo(knex.fn.now());
-    // prettier-ignore
-    table.dateTime("updatedAt").notNullable().defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
+    table.dateTime("updated_at").notNullable().defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
   });
 };
 
