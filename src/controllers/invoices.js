@@ -6,16 +6,36 @@ module.exports = app => {
 
     const page = req.query.page || "1";
 
+      var dt = new Date(),
+      month = dt.getMonth(),
+      year = dt.getFullYear();
+
+      var FirstDay = new Date(year, month, 1);
+      var LastDay = new Date(year, month + 1, 0);
+
     const invoices = await app.db('invoices as i')
-      .select("i.*", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
+      .select("i.*", "ca.name as name_category", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
       .join('accounts as a', 'a.id', '=', 'i.account_id')
       .join('status as s', 's.id', '=', 'i.status')
       .join('companies as c', 'c.id', '=', 'i.company_id')
+      .join('categories as ca', 'ca.id', '=', 'i.category_id')
       .where({ 'i.active': 1 })
       .modify(function (queryBuilder) {
         if (req.query.status) {
           queryBuilder.where('i.status', '=', req.query.status)
         }
+        if (req.query.type) {
+          queryBuilder.where('i.type', '=', req.query.type)
+        }
+        if (req.query.date_inicial) {
+          queryBuilder.where('i.dt_duedate', '>=', req.query.date_inicial)
+        }else{
+          queryBuilder.where('i.dt_duedate', '>=', FirstDay)
+        }
+        if (req.query.date_final) {
+          queryBuilder.where('i.dt_duedate', '<=', LastDay)
+        }
+
       })
       .orderBy('i.dt_duedate', 'asc')
       .paginate({ perPage: options.paginate.recordsPerPage, currentPage: page, isLengthAware: true });
