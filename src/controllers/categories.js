@@ -7,7 +7,8 @@ module.exports = app => {
         const page = req.query.page || "1";
 
         const categories = await app.db('categories').where({ active: 1 })
-            .orderBy('id', 'desc');
+            .orderBy('type', 'desc',)
+            .orderBy('name', 'asc',);
 
         return res.status(200).json(categories);
 
@@ -48,11 +49,12 @@ module.exports = app => {
             return res.status(400).send('Name required')
         } else {
             var name = req.body.name;
+            var type = req.body.type;
         }
 
         await app.db('categories')
             .where({ id: req.params.id })
-            .update({ name })
+            .update({ name, type })
             .then(_ => res.status(200).json(req.body))
             .catch(err => res.status(400).json(err))
     };
