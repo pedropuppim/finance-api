@@ -34,6 +34,8 @@ module.exports = app => {
           queryBuilder.where('i.dt_duedate', '>=', FirstDay)
         }
         if (req.query.date_final) {
+          queryBuilder.where('i.dt_duedate', '<=', req.query.date_final)
+        }else{
           queryBuilder.where('i.dt_duedate', '<=', LastDay)
         }
 
