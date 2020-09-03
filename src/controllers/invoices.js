@@ -14,11 +14,12 @@ module.exports = app => {
       var LastDay = new Date(year, month + 1, 0);
 
     const invoices = await app.db('invoices as i')
-      .select("i.*", "ca.name as name_category", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
+      .select("i.*", "pm.name as name_payment_method", "ca.name as name_category", "a.name as name_account", "c.name as name_company", "s.name as name_status", "s.css as css_status")
       .join('accounts as a', 'a.id', '=', 'i.account_id')
       .join('status as s', 's.id', '=', 'i.status')
       .join('companies as c', 'c.id', '=', 'i.company_id')
       .join('categories as ca', 'ca.id', '=', 'i.category_id')
+      .join('payment_methods as pm', 'pm.id', '=', 'i.payment_method_id')
       .where({ 'i.active': 1 })
       .modify(function (queryBuilder) {
         if (req.query.status) {
