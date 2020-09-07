@@ -1,5 +1,6 @@
 module.exports = app => {
   app.route("/dashboard/box_month")
+    .all(app.src.config.auth.authenticate())
     .get(app.src.controllers.dashboard.box_month)
 
     app.route("/dashboard/pay_month_by_category")

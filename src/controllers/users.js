@@ -9,12 +9,38 @@ module.exports = app => {
 
   const list = async (req, res) => {
 
-    const page = req.query.page || "1";
+    try {
 
-    const users = await app.db('users').where({ active: 1 })
+      const users = await app.db('users')
+      .select(
+          "id", "created_at", "name", "admin", "email",
+        app.db.raw("CASE WHEN admin = 0 THEN 'Admin' ELSE 'Regular' END AS name_type")
+      )
+      .where({ active: 1 })
       .orderBy('id', 'desc');
 
-    return res.status(200).json(users);
+      console.log(users);
+
+      if (req.query.pdf) {
+        const fields = [
+          ['id', 'Id', 50],
+          ['created_at', 'Data de Criação', 150],
+          ['name', 'Nome', 300],
+          ['email', 'E-mail', 300],
+          ['name_type', 'Tipo', 300]
+        ];
+
+        const xlsx = await app.src.services.xlsx.getXlsx(fields, users);
+        return res.status(200).json({ pdf_file: process.env.APP_URL_PUBLIC + xlsx });
+
+      } else {
+        return res.status(200).json(users);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+    
 
   };
 

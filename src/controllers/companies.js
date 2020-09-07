@@ -4,32 +4,50 @@ module.exports = app => {
 
     const list = async (req, res) => {
 
-        const page = req.query.page || "1";
+        try {
+            const companies = await app.db('companies').where({ active: 1 })
+                .orderBy('id', 'desc');
 
-        const companies = await app.db('companies').where({ active: 1 })
-            .orderBy('id', 'desc');
+            if (req.query.pdf) {
+                const fields = [
+                    ['id','Id',50],
+                    ['created_at', 'Data de Criação', 150],
+                    ['name','Nome',300]                    
+                ];
 
-        return res.status(200).json(companies);
+                const xlsx = await app.src.services.xlsx.getXlsx(fields, companies);
+                return res.status(200).json({ pdf_file: process.env.APP_URL_PUBLIC+xlsx});
+
+
+            } else {
+                return res.status(200).json(companies);
+            }
+        } catch (error) {
+            console.log(error);
+        }
 
     };
 
     const get = async (req, res) => {
 
-        const page = req.query.page || "1";
-
+       
         if (!req.params.id) {
             return res.status(400).send('Id required')
         }
 
-        const companies = await app.db('companies as c')
-            .where({ 'c.active': 1, 'c.id': req.params.id })
-            .select("c.*", "t.tel_number","a.zip", "a.street", 	"a.complement", "a.number","a.neighborhood","a.city","a.state")
-            .leftJoin('addresses as a', 'a.company_id', '=', 'c.id')
-            .leftJoin('telephones as t', 't.company_id', '=', 'c.id')
-            .first()
-            .orderBy('c.id', 'desc');
+        try {
+            const companies = await app.db('companies as c')
+                .where({ 'c.active': 1, 'c.id': req.params.id })
+                .select("c.*", "t.tel_number", "a.zip", "a.street", "a.complement", "a.number", "a.neighborhood", "a.city", "a.state")
+                .leftJoin('addresses as a', 'a.company_id', '=', 'c.id')
+                .leftJoin('telephones as t', 't.company_id', '=', 'c.id')
+                .first()
+                .orderBy('c.id', 'desc');
 
-        return res.status(200).json(companies);
+            return res.status(200).json(companies);
+        } catch (error) {
+            console.log(error);
+        }
 
     };
 
@@ -118,18 +136,22 @@ module.exports = app => {
             return res.status(400).send('Id required')
         }
 
-        await app.db('companies')
-            .where({ id: req.params.id, active: 1 })
-            .update({ active: 0 })
-            .then(rowsDeleted => {
-                if (rowsDeleted > 0) {
-                    res.status(204).send()
-                } else {
-                    const msg = `record not found with id ${req.params.id}.`
-                    res.status(400).send(msg)
-                }
-            })
-            .catch(err => res.status(400).json(err))
+        try {
+            await app.db('companies')
+                .where({ id: req.params.id, active: 1 })
+                .update({ active: 0 })
+                .then(rowsDeleted => {
+                    if (rowsDeleted > 0) {
+                        res.status(204).send()
+                    } else {
+                        const msg = `record not found with id ${req.params.id}.`
+                        res.status(400).send(msg)
+                    }
+                })
+                .catch(err => res.status(400).json(err))
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return { list, save, update, remove, get };
