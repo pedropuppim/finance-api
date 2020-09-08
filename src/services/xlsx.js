@@ -7,6 +7,7 @@ module.exports = app => {
     const getXlsx = async (fields, dataset) => {
 
         try {
+
             const styles = {
                 header: {
                     font: {

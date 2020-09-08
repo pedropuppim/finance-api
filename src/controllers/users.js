@@ -21,7 +21,7 @@ module.exports = app => {
 
       console.log(users);
 
-      if (req.query.pdf) {
+      if (req.query.xlsx) {
         const fields = [
           ['id', 'Id', 50],
           ['created_at', 'Data de Criação', 150],
@@ -31,7 +31,7 @@ module.exports = app => {
         ];
 
         const xlsx = await app.src.services.xlsx.getXlsx(fields, users);
-        return res.status(200).json({ pdf_file: process.env.APP_URL_PUBLIC + xlsx });
+        return res.status(200).json({ file: process.env.APP_URL_PUBLIC + xlsx });
 
       } else {
         return res.status(200).json(users);
